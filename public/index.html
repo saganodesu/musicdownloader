@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube M4A コンバーター | 完全版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-size: 60px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 10px;
+    }
+
+    .url-input-container {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .format-selector {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .format-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .format-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .format-btn.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-color: transparent;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .video-info {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 30px 0;
+      display: none;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .video-info.show {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .thumbnail {
+      width: 200px;
+      height: 120px;
+      border-radius: 15px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-details {
+      flex: 1;
+    }
+
+    .video-details h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .video-details p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 5px;
+    }
+
+    .progress-container {
+      margin: 30px 0;
+      display: none;
+    }
+
+    .progress-container.show {
+      display: block;
+    }
+
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.2);
+      height: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      width: 0%;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+    }
+
+    .status-message {
+      padding: 15px;
+      border-radius: 15px;
+      margin: 20px 0;
+      display: none;
+      font-weight: 500;
+    }
+
+    .status-message.show {
+      display: block;
+    }
+
+    .status-message.success {
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      color: #81c784;
+    }
+
+    .status-message.error {
+      background: rgba(244, 67, 54, 0.2);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      color: #e57373;
+    }
+
+    .status-message.info {
+      background: rgba(33, 150, 243, 0.2);
+      border: 1px solid rgba(33, 150, 243, 0.3);
+      color: #64b5f6;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .button-group .btn {
+      flex: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .video-info.show {
+        flex-direction: column;
+      }
+      
+      .thumbnail {
+        width: 100%;
+        height: 200px;
+      }
+      
+      .format-selector {
+        flex-wrap: wrap;
+      }
+      
+      .format-btn {
+        flex: 0 0 calc(50% - 5px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🎵</div>
+      <h1>YouTube M4A コンバーター</h1>
+      <p class="subtitle">高音質でYouTubeをオーディオファイルに変換</p>
+    </div>
+
+    <div class="url-input-container">
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="urlInput" 
+          placeholder="https://www.youtube.com/watch?v=..."
+          autocomplete="off"
+        >
+        <button id="analyzeBtn" class="btn btn-primary">解析</button>
+      </div>
+      
+      <div class="format-selector">
+        <button class="format-btn active" data-format="m4a">M4A</button>
+        <button class="format-btn" data-format="mp3">MP3</button>
+        <button class="format-btn" data-format="opus">Opus</button>
+        <button class="format-btn" data-format="wav">WAV</button>
+      </div>
+      
+      <div class="format-selector" style="margin-top: 10px;">
+        <button class="format-btn quality-btn active" data-quality="highest">最高音質</button>
+        <button class="format-btn quality-btn" data-quality="lowest">標準音質</button>
+      </div>
+    </div>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <div id="videoInfo" class="video-info">
+      <div class="thumbnail">
+        <img id="videoThumbnail" src="" alt="サムネイル">
+      </div>
+      <div class="video-details">
+        <h3 id="videoTitle"></h3>
+        <p id="videoChannel"></p>
+        <p id="videoDuration"></p>
+      </div>
+    </div>
+
+    <div id="progressContainer" class="progress-container">
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <div class="progress-info">
+        <span id="progressStatus">準備中...</span>
+        <span id="progressPercent">0%</span>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button id="downloadBtn" class="btn btn-primary" style="display: none;">
+        ⬇️ ダウンロード
+      </button>
+      <button id="cancelBtn" class="btn btn-secondary" style="display: none;">
+        ❌ キャンセル
+      </button>
+    </div>
+  </div>
+
+  <script>
+    class YouTubeConverter {
+      constructor() {
+        this.videoInfo = null;
+        this.selectedFormat = 'm4a';
+        this.selectedQuality = 'highest';
+        this.currentController = null;
+        this.init();
+      }
+
+      init() {
+        this.urlInput = document.getElementById('urlInput');
+        this.analyzeBtn = document.getElementById('analyzeBtn');
+        this.downloadBtn = document.getElementById('downloadBtn');
+        this.cancelBtn = document.getElementById('cancelBtn');
+        this.videoInfoDiv = document.getElementById('videoInfo');
+        this.progressContainer = document.getElementById('progressContainer');
+        this.progressFill = document.getElementById('progressFill');
+        this.progressStatus = document.getElementById('progressStatus');
+        this.progressPercent = document.getElementById('progressPercent');
+        this.statusMessage = document.getElementById('statusMessage');
+        this.formatBtns = document.querySelectorAll('.format-btn:not(.quality-btn)');
+        this.qualityBtns = document.querySelectorAll('.quality-btn');
+
+        this.setupEventListeners();
+        this.setupClipboardDetection();
+      }
+
+      setupEventListeners() {
+        this.analyzeBtn.addEventListener('click', () => this.analyzeVideo());
+        this.downloadBtn.addEventListener('click', () => this.startDownload());
+        this.cancelBtn.addEventListener('click', () => this.cancelDownload());
+        
+        this.urlInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.analyzeVideo();
+        });
+
+        this.formatBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            this.formatBtns.forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.selectedFormat = e.target.dataset.format;
+          });
+        });
+
+        this.qualityBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            this.qualityBtns.forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.selectedQuality = e.target.dataset.quality;
+          });
+        });
+      }
+
+      setupClipboardDetection() {
+        document.addEventListener('paste', async (e) => {
+          const pastedText = e.clipboardData.getData('text');
+          if (this.isValidYouTubeUrl(pastedText)) {
+            this.urlInput.value = pastedText;
+            await this.analyzeVideo();
+          }
+        });
+      }
+
+      isValidYouTubeUrl(url) {
+        const patterns = [
+          /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/,
+          /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[\w-]+/,
+          /^(https?:\/\/)?youtu\.be\/[\w-]+/
+        ];
+        return patterns.some(pattern => pattern.test(url));
+      }
+
+      async analyzeVideo() {
+        const url = this.urlInput.value.trim();
+        
+        if (!url) {
+          this.showMessage('YouTubeのURLを入力してください', 'error');
+          return;
+        }
+
+        if (!this.isValidYouTubeUrl(url)) {
+          this.showMessage('有効なYouTube URLではありません', 'error');
+          return;
+        }
+
+        this.analyzeBtn.disabled = true;
+        this.analyzeBtn.textContent = '解析中...';
+        this.hideVideoInfo();
+        this.hideProgress();
+        this.hideDownloadButtons();
+
+        try {
+          const response = await fetch('/api/info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || '解析に失敗しました');
+          }
+
+          this.videoInfo = await response.json();
+          this.displayVideoInfo();
+          this.downloadBtn.style.display = 'flex';
+          this.showMessage('動画情報を取得しました', 'success');
+        } catch (error) {
+          console.error('解析エラー:', error);
+          this.showMessage(`エラー: ${error.message}`, 'error');
+        } finally {
+          this.analyzeBtn.disabled = false;
+          this.analyzeBtn.textContent = '解析';
+        }
+      }
+
+      displayVideoInfo() {
+        if (!this.videoInfo) return;
+
+        document.getElementById('videoTitle').textContent = this.videoInfo.title;
+        document.getElementById('videoChannel').textContent = this.videoInfo.channel;
+        document.getElementById('videoDuration').textContent = 
+          `再生時間: ${this.formatDuration(this.videoInfo.duration)}`;
+        document.getElementById('videoThumbnail').src = this.videoInfo.thumbnail;
+        
+        this.videoInfoDiv.classList.add('show');
+      }
+
+      async startDownload() {
+        if (!this.videoInfo) {
+          this.showMessage('先に動画を解析してください', 'error');
+          return;
+        }
+
+        this.currentController = new AbortController();
+        this.downloadBtn.style.display = 'none';
+        this.cancelBtn.style.display = 'flex';
+        this.showProgress();
+        this.updateProgress(0, 'ダウンロード準備中...');
+
+        try {
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              url: this.urlInput.value,
+              format: this.selectedFormat,
+              quality: this.selectedQuality
+            }),
+            signal: this.currentController.signal
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'ダウンロードに失敗しました');
+          }
+
+          const contentLength = response.headers.get('content-length');
+          const reader = response.body.getReader();
+          const chunks = [];
+          let downloadedSize = 0;
+
+          this.updateProgress(30, 'ダウンロード中...');
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            chunks.push(value);
+            downloadedSize += value.length;
+
+            if (contentLength) {
+              const progress = 30 + (downloadedSize / parseInt(contentLength)) * 60;
+              this.updateProgress(progress, `ダウンロード中... ${this.formatBytes(downloadedSize)}`);
+            }
+          }
+
+          this.updateProgress(100, 'ダウンロード完了！');
+
+          // Blobを作成してダウンロード
+          const blob = new Blob(chunks, { 
+            type: `audio/${this.selectedFormat === 'm4a' ? 'mp4' : this.selectedFormat}` 
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${this.videoInfo.title.replace(/[^\w\s]/g, '')}.${this.selectedFormat}`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          this.showMessage('ダウンロードが完了しました！', 'success');
+        } catch (error) {
+          if (error.name === 'AbortError') {
+            this.showMessage('ダウンロードをキャンセルしました', 'info');
+          } else {
+            console.error('ダウンロードエラー:', error);
+            this.showMessage(`エラー: ${error.message}`, 'error');
+          }
+        } finally {
+          this.cancelBtn.style.display = 'none';
+          this.downloadBtn.style.display = 'flex';
+          this.currentController = null;
+        }
+      }
+
+      cancelDownload() {
+        if (this.currentController) {
+          this.currentController.abort();
+        }
+      }
+
+      updateProgress(percent, status) {
+        this.progressFill.style.width = `${percent}%`;
+        this.progressStatus.textContent = status;
+        this.progressPercent.textContent = `${Math.round(percent)}%`;
+      }
+
+      showProgress() {
+        this.progressContainer.classList.add('show');
+      }
+
+      hideProgress() {
+        this.progressContainer.classList.remove('show');
+        this.progressFill.style.width = '0%';
+        this.progressStatus.textContent = '';
+        this.progressPercent.textContent = '0%';
+      }
+
+      showVideoInfo() {
+        this.videoInfoDiv.classList.add('show');
+      }
+
+      hideVideoInfo() {
+        this.videoInfoDiv.classList.remove('show');
+      }
+
+      hideDownloadButtons() {
+        this.downloadBtn.style.display = 'none';
+        this.cancelBtn.style.display = 'none';
+      }
+
+      showMessage(message, type) {
+        this.statusMessage.textContent = message;
+        this.statusMessage.className = `status-message show ${type}`;
+        
+        setTimeout(() => {
+          this.statusMessage.classList.remove('show');
+        }, 5000);
+      }
+
+      formatDuration(seconds) {
+        if (!seconds) return '--:--';
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        
+        if (hours > 0) {
+          return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+    }
+
+    // アプリケーション起動
+    const app = new YouTubeConverter();
+  </script>
+</body>
+</html>
